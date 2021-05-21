@@ -1,0 +1,15 @@
+{
+	"web": {
+		"auth_uri": "https://login.w3.ibm.com/oidc/endpoint/default/authorize",
+		"token_uri": "https://login.w3.ibm.com/oidc/endpoint/default/token",
+		"token_introspection_uri": "https://login.w3.ibm.com/oidc/endpoint/default/introspect",
+		"issuer": "https://login.w3.ibm.com/oidc/endpoint/default",
+ 		"JWKS": [
+		"./w3id_public_jwks.json"
+	  ],
+ 		"redirect_uris": [ 
+			"https://xforcesearch.dal1a.cirrus.ibm.com/"
+		]
+	}
+  }
+  

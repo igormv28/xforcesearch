@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <title>IBM X-Force Search</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" type="text/css" href="../static/css/jquery.dataTables.min.css">
+      <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+      <link rel="stylesheet" href="../static/css/style.min.css">
+      <script src="../static/js/jquery.min.js"></script>
+      <script src="../static/js/bootstrap.min.js"></script>
+      <script src="../static/js/sortcoluna.min.js"></script>
+   </head>
+   <body>
+      <nav class="navbar navbar-default navbar-fixed-top">
+         <div class="container-fluid">
+            <div class="navbar-header" style="margin-top: 8px;">
+               <h6>   
+                  IBM X-Force Search
+               </h6>
+            </div>
+            
+            <div class="navbar-right" style="margin-top: 8px; padding-right: 11px;">
+               <h6>   
+{{ email}}   <a href='/logout'>Log out</a> </h6>
+            </div>
+
+         </div>
+      </nav> 
+      <div class="modal-backdrop" id="loadingdiv" style="background-color: #00000000;">
+         <div class="container" style="width: 300px; margin-top: 20%;">
+            <img src="../static/img/load.svg"> </img>
+         </div>
+      </div>  
+      <div class="col-md-12 rows" style="margin-top: 90px; margin-bottom: 50px; ">
+         <form class="form" action="" method="post" autocomplete="off">
+            <input type="hidden" name="arr_platform" id="arr_platform" value="{{ arr_platform }}">
+            <div class="panel" style="padding-bottom: 0px">
+               <div class="panel-body">
+                  {% if wait > 0 %}
+                  <div class="rows col-md-12">
+                     <div class="alert alert-danger" role="alert">
+                        {{firstname}} was disabled to search for {{wait}} mins!
+                     </div>
+                  </div>
+                  {% endif %}
+                  <div class="rows col-md-12" >
+                     <div class="col-md-6 col-md-offset-3 form-group row">
+                        <div class="col-sm-7 autocomplete">
+                           <input type="text" class="form-control" id="platform" name="platform" placeholder="E.g: kube-apiserver 1.8, or CVE-2019-1003030 " value="{{platform}}" title="Search for a vendor product and version, or some CVE ID." required>
+                        </div>
+                        <div class="col-md-2 form-group">
+                           <a href="javascript:doSearch()">
+                              <div class="btn btn-primary" style="width:109px;" id="searchbtn" title="Search for a vendor product and version, or some CVE ID.">Search</div>
+                           </a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="modal fade" id="inspectModal" tabindex="-1" role="dialog" aria-labelledby="inspectModalLabel" aria-hidden="true">
+               <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <h5 class="modal-title" id="inspectModalLabel">Search for keywords within the official references.</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                     </div>
+                     <div class="modal-body">
+                        <input type="text" class="form-control" id="version" name="version" placeholder="E.g: prior 8.5.5.16, or affected until version 13." value="{{version}}" title="Search for keywords within the official references.">
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="checkBuild()">🔎 Inspect</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <table id="table" class="display" style="width:100%;">
+               <thead>
+                  <th style="width: 65px;">CVSS score</th>
+                  <th style="width: 95px;">CVE-ID</th>
+                  <th style="width: 100px;">X-Force Reported</th>
+                  <th style="width: 300px;">Title</th>
+                  <th style="width: 314px; ">Description</th>
+                  <th>References</th>
+               </thead>
+               <tbody>
+                  {% for res in result %}
+                  <tr>
+                     {% if (res.risk_level <= 3.9) %}
+                     <td style="background-color: #56812b; color: white; font-size: 13px; text-align: center" data-sort-value="{{res.risk_level}}">
+                        {{res.risk_level}}
+                     </td>
+                     {% elif (res.risk_level >= 4) and (res.risk_level <= 6.9)%} 
+                     <td style="background-color: #f90;  font-size: 13px; text-align: center" data-sort-value="{{res.risk_level}}">
+                        {{res.risk_level}}
+                     </td>
+                     {% elif (res.risk_level > 7) %} 
+                     <td style="background-color: #c00; color: white; font-size: 13px; text-align: center;" background="../static/img/cross-pattern-lg.png" data-sort-value="{{res.risk_level}}">
+                        {{res.risk_level}}
+                     </td>
+                     {% else %} 
+                     <td data-sort-value="{{res.risk_level}}">
+                        {{res.risk_level}}
+                     </td>
+                     {% endif %} 
+                     {% if foundresult[loop.index0] == 1 %}
+                     {% if res.stdcode %}
+                     <td data-sort-value="{{res.stdcode.0}}">
+                        <a href="https://exchange.xforce.cloud.com/vulnerabilities/{{res.stdcode.0}}" target="_blank"> 🔎{{res.stdcode.0}}</a> 
+                     </td>
+                     {% else %}
+                     <td data-sort-value="">                            
+                     </td>
+                     {% endif %}
+                     {% else %}
+                     {% if res.stdcode %}
+                     <td data-sort-value="{{res.stdcode.0}}">                           
+                        <a href="https://exchange.xforce.cloud.com/vulnerabilities/{{res.stdcode.0}}" target="_blank"> {{res.stdcode.0}}</a> 
+                     </td>
+                     {% else %}
+                     <td data-sort-value="">                            
+                     </td>
+                     {% endif %}
+                     {% endif %}
+                     <td data-sort-value="{{res.reported}}">
+                        {{ res.reported | replace("T00:00:00Z", "") }}
+                     </td>
+                     <td data-sort-value="{{res.title}}">
+                        {{res.title}}
+                     </td>
+                     <td data-sort-value="{{res.description}}">
+                        {{res.description | truncate(200)}}
+                     </td>
+                     {% if res.references %}
+                     <td data-sort-value="{{res.references.0.link_target}}">
+                        <ul>
+                           {% for ref in res.references %}
+                           <li> 
+                              <a href="{{ref.link_target}}" target="_blank">{{ref.link_target | replace("https://", "") | replace("http://","") | replace("www.","") | truncate(13)}} </a><br> 
+                           </li>
+                           {% if loop.index == 3 %}{% break %}{% endif %}
+                           {% endfor %}
+                        </ul>
+                     </td>
+                     {% else %}
+                     <td data-sort-value="">
+                     </td>
+                     {% endif %}
+                  </tr>
+                  {% endfor %}
+              <tfoot>
+                  <tr>
+                     <th style="width: 65px;">CVSS score</th>
+                     <th style="width: 95px;">CVE-ID</th>
+                     <th style="width: 100px;">X-Force Reported</th>
+                     <th style="width: 300px;">Title</th>
+                     <th style="width: 314px; ">Description</th>
+                     <th>References</th>
+                  </tr>
+               </tfoot> 
+               </tbody>
+            </table>
+         </form>
+      </div>
+      <nav class="navbar navbar-default navbar-fixed-bottom">
+         <h6 style="padding-top:8px; margin-left: 15px">
+            Developed by Igor Vieira
+         </h6>
+      </nav>
+      <div class="modal-backdrop fade hide" id="wholemodal"></div>
+      <script>    
+         $(document).ready(function() {
+             $('#table').DataTable();
+         } );
+      </script>
+      <script src="../static/js/jquery.dataTables.min.js"></script>
+      <script type="text/javascript" src="../static/js/custom.js"></script>
+      {% if 'imvieira@br.ibm.com' in bluegroup %}  
+      <button type="button" class="btn btn-primary" id="buildsearchbtn" style="float: right;" data-toggle="modal" data-target="#inspectModal" title="Search for keywords within the official references.">
+      🔎 Inspect
+      </button>
+      {% else %}{% endif %}
+   </body>
+</html>

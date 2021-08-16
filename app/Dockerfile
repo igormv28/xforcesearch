@@ -1,6 +1,5 @@
 FROM ubuntu:latest
-LABEL maintainer="Igor Vieira imvieira@br.ibm.com" \
-    repository="https://github.ibm.com/wwiait/xforcesearch/"  
+LABEL author="https://github.com/igormv28" 
 
 RUN apt-get update && \
     apt-get install -y python3-pip python3-dev && \

@@ -44,7 +44,7 @@ def add_header(response):
     response.headers['access-control-allow-headers'] = 'x-csrf-token'
     response.headers['x-xss-Protection'] = '1; mode=block'
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    response.headers['access-control-allow-origin'] = 'https://xforcesearch.dal1a.cirrus.ibm.com/'
+    response.headers['access-control-allow-origin'] = 'https://xforcesearch.c8f8f055.public.multi-containers.ibm.com/'
     response.headers['access-control-allow-credentials'] = 'true'
     response.headers['strict-transport-security'] = 'max-age=31536000; includeSubDomains'
     response.headers['x-content-type-options'] = 'nosniff'

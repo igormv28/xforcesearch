@@ -1,4 +1,4 @@
-[![](https://github.com/igormv28/xforcesearch/blob/main/status/on/pipeline-on.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/on/containerscan-on.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/on/env-on.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/on/w3id-on.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/python-3.svg)](#)
+[![](https://github.com/igormv28/xforcesearch/blob/main/status/on/pipeline-on.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/on/containerscan-on.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/on/env-on.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/on/mfa_enabled.svg)](#) [![](https://github.com/igormv28/xforcesearch/blob/main/status/python-3.svg)](#)
 
 # X-Force Search
 * X-Force Search was written out of my frustration from using X-Force Exchange Search, IBM Security Advisories Secintel, CVEDetails, and NIST for CVSS rating of platform versions.

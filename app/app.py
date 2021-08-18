@@ -55,10 +55,8 @@ def add_header(response):
 def search():
     app.jinja_env.add_extension('jinja2.ext.loopcontrols')
     sessionmd5 = uuid.uuid4().hex
-    who = g.oidc_id_token['firstName'] + " " + g.oidc_id_token['email']
     cveid = 'https://api.xforce.ibmcloud.com/vulnerabilities/search/'
     prodname = 'https://api.xforce.ibmcloud.com/vulnerabilities/fulltext?q=platforms_affected:'
-    print("\n", "-"*20, "\n", "When: ", datetime.now(), "\n","Who: ", who, "\n", "Session MD5:" + sessionmd5)
     try:
         if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
             print(" HTTP request from IP: ", request.environ['REMOTE_ADDR'], "\n")

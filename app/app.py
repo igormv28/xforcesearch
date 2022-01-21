@@ -1,6 +1,5 @@
 from flask import Flask, g, redirect, url_for, request, render_template, Response, session, make_response
 from werkzeug.wrappers import CommonResponseDescriptorsMixin
-from flask_oidc import OpenIDConnect
 import uuid
 import os
 import re
@@ -15,24 +14,13 @@ def _force_https(wsgi_app):
         return wsgi_app(environ, start_response)
     return wrapper
 app = Flask(__name__)
-with open('artifact/w3id_sso.json') as f:
-    w3id_sso_json = json.load(f)
-w3id_sso_json["web"]["client_id"] = os.environ.get("OIDC_CLIENTID")
-w3id_sso_json["web"]["client_secret"] = os.environ.get("OIDC_CLIENTSECRET")
 OIDC_SECRETKEY = os.environ.get("OIDC_SECRETKEY")
 OIDC_SECRETKEY_VAL = str(OIDC_SECRETKEY).encode('ISO-8859-1').decode('unicode-escape')
 OIDC_USERNAME = os.environ.get("OIDC_USERNAME")
 OIDC_TOKEN = os.environ.get("OIDC_TOKEN")
-ephefile = uuid.uuid4().hex
-with open(ephefile, 'w') as json_file:
-    json.dump(w3id_sso_json, json_file)
 app.wsgi_app = _force_https(app.wsgi_app)
-app.config["OIDC_CLIENT_SECRETS"] = ephefile
-app.config["OIDC_COOKIE_SECURE"] = False
-app.config["OIDC_CALLBACK_ROUTE"] = "/oidc/callback"
 app.config["SECRET_KEY"] = OIDC_SECRETKEY_VAL
 oidc = OpenIDConnect(app) 
-os.remove(ephefile)
 responsemd5 = uuid.uuid4().hex
 
 @app.after_request
@@ -51,7 +39,6 @@ def add_header(response):
     return response
 
 @app.route('/',methods = ['POST', 'GET'])
-@oidc.require_login
 def search():
     app.jinja_env.add_extension('jinja2.ext.loopcontrols')
     sessionmd5 = uuid.uuid4().hex

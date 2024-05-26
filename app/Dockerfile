@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-LABEL author="https://github.com/igormv28" 
+LABEL author="https://github.com/imv7" 
 
 RUN apt-get update && \
     apt-get install -y python3-pip python3-dev && \
